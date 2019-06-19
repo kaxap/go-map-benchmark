@@ -2,8 +2,8 @@
 For maps containing:
 
 - Pointers `map[int32]*Item`
-- Map with struct values `map[int32]Item`, updating map values by reading from map and then writing back
-- Map backed with slice and set `map[int32]int`; + `[]*Item` + `map[int32]struct{}`. Map contains slice indexes as values, slice contains pointers to Item, and set contains free (previously deleted) slice indexes (for re-use).
+- Map with struct values `map[int32]Item`, updating map values by reading from the map and then writing back
+- Map `map[int32]int` backed with slice `[]*Item` and set `map[int32]struct{}`. Map contains slice indexes as values, slice contains pointers to a struct, and the set contains free (previously deleted) slice indexes (for re-use).
 
 ## Benchmarks
 
