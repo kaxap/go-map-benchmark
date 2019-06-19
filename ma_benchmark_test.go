@@ -121,6 +121,9 @@ func BenchmarkMapRewrite_Set(b *testing.B) {
 func BenchmarkMapSlice_Set(b *testing.B) {
 	Set(NewMapSlice(b.N), b)
 }
+func BenchmarkMapSliceSlice_Set(b *testing.B) {
+	Set(NewMapSliceSlice(b.N), b)
+}
 func BenchmarkMapByteBuf_Set(b *testing.B) {
 	Set(NewMapByteBuf(b.N), b)
 }
@@ -137,6 +140,9 @@ func BenchmarkMapRewrite_Get(b *testing.B) {
 }
 func BenchmarkMapSlice_Get(b *testing.B) {
 	Get(NewMapSlice(b.N), b)
+}
+func BenchmarkMapSliceSlice_Get(b *testing.B) {
+	Get(NewMapSliceSlice(b.N), b)
 }
 func BenchmarkMapByteBuf_Get(b *testing.B) {
 	Get(NewMapByteBuf(b.N), b)
@@ -155,6 +161,9 @@ func BenchmarkMapRewrite_Update(b *testing.B) {
 func BenchmarkMapSlice_Update(b *testing.B) {
 	Update(NewMapSlice(b.N), b)
 }
+func BenchmarkMapSliceSlice_Update(b *testing.B) {
+	Update(NewMapSliceSlice(b.N), b)
+}
 func BenchmarkMapByteBuf_Update(b *testing.B) {
 	Update(NewMapByteBuf(b.N), b)
 }
@@ -170,6 +179,9 @@ func BenchmarkMapRewrite_Delete(b *testing.B) {
 	Delete(NewMapRewrite(b.N), b)
 }
 func BenchmarkMapSlice_Delete(b *testing.B) {
+	Delete(NewMapSlice(b.N), b)
+}
+func BenchmarkMapSliceSlice_Delete(b *testing.B) {
 	Delete(NewMapSlice(b.N), b)
 }
 func BenchmarkMapByteBuf_Delete(b *testing.B) {
@@ -189,6 +201,9 @@ func BenchmarkMapRewrite_SetGet(b *testing.B) {
 func BenchmarkMapSlice_SetGet(b *testing.B) {
 	SetGet(NewMapSlice(b.N), b)
 }
+func BenchmarkMapSliceSlice_SetGet(b *testing.B) {
+	SetGet(NewMapSliceSlice(b.N), b)
+}
 func BenchmarkMapByteBuf_SetGet(b *testing.B) {
 	SetGet(NewMapByteBuf(b.N), b)
 }
@@ -206,6 +221,9 @@ func BenchmarkMapRewrite_SetDelete(b *testing.B) {
 func BenchmarkMapSlice_SetDelete(b *testing.B) {
 	SetDelete(NewMapSlice(b.N), b)
 }
+func BenchmarkMapSliceSlice_SetDelete(b *testing.B) {
+	SetDelete(NewMapSliceSlice(b.N), b)
+}
 func BenchmarkMapByteBuf_SetDelete(b *testing.B) {
 	SetDelete(NewMapByteBuf(b.N), b)
 }
@@ -222,6 +240,9 @@ func BenchmarkMapRewrite_GetDelete(b *testing.B) {
 }
 func BenchmarkMapSlice_GetDelete(b *testing.B) {
 	GetDelete(NewMapSlice(b.N), b)
+}
+func BenchmarkMapSliceSlice_GetDelete(b *testing.B) {
+	GetDelete(NewMapSliceSlice(b.N), b)
 }
 func BenchmarkMapByteBuf_GetDelete(b *testing.B) {
 	GetDelete(NewMapByteBuf(b.N), b)
