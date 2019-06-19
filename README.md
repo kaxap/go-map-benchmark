@@ -1,4 +1,4 @@
-# Speed and GC time benchmarks
+# Speed and GC time benchmarks for Go native map variations
 For maps containing:
 
 - Pointers `map[int32]*Item`
