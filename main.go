@@ -8,6 +8,8 @@ import (
 	"unsafe"
 )
 
+// from https://github.com/golang/go/issues/9477#issuecomment-68500643 by github.com/mish15
+
 // Results of this program on my machine: (linux amd64, go 1.4):
 //
 // for t in 1 2 3 4; do go run maps.go $t; done
