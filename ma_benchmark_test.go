@@ -10,48 +10,56 @@ import (
 	"time"
 )
 
-type GCTimes struct {
-	TotalTimeBefore time.Duration
-	PauseTimeBefore time.Duration
-	TotalTimeAfter  time.Duration
-	PauseTimeAfter  time.Duration
+type Stats struct {
+	GCTotalTimeBefore time.Duration
+	GCPauseTimeBefore time.Duration
+	GCTotalTimeAfter  time.Duration
+	GCPauseTimeAfter  time.Duration
+	MemBefore         uint64
+	MemAfter          uint64
 }
 
-var GCTimesMap = make(map[string]GCTimes)
+var StatsMap = make(map[string]Stats)
 var printed = false
 var prevGCPause = time.Duration(0)
 
-func CollectGC(t *GCTimes, after bool) {
+func CollectGC(t *Stats, after bool) {
 	start := time.Now()
 	runtime.GC()
 	total := time.Since(start)
 	var stats debug.GCStats
 	debug.ReadGCStats(&stats)
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
 	if after {
-		t.TotalTimeAfter = total
-		t.PauseTimeAfter = stats.PauseTotal - prevGCPause
+		t.GCTotalTimeAfter = total
+		t.GCPauseTimeAfter = stats.PauseTotal - prevGCPause
+		t.MemAfter = memStats.Alloc
 	} else {
-		t.TotalTimeBefore = total
-		t.PauseTimeBefore = stats.PauseTotal - prevGCPause
+		t.GCTotalTimeBefore = total
+		t.GCPauseTimeBefore = stats.PauseTotal - prevGCPause
+		t.MemBefore = memStats.Alloc
 	}
 	prevGCPause = stats.PauseTotal
 }
 
 func Set(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 	}
 	b.StopTimer()
 	key := fmt.Sprintf("A Set %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 func Get(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 	}
@@ -63,15 +71,16 @@ func Get(m Map, b *testing.B) {
 
 	b.StopTimer()
 	key := fmt.Sprintf("B Get %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 func Update(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 	}
@@ -83,15 +92,16 @@ func Update(m Map, b *testing.B) {
 
 	b.StopTimer()
 	key := fmt.Sprintf("C Update %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 func Delete(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 	}
@@ -103,15 +113,16 @@ func Delete(m Map, b *testing.B) {
 
 	b.StopTimer()
 	key := fmt.Sprintf("D Delete %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 func SetGet(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 		_ = m.Get(int32(i))
@@ -119,15 +130,16 @@ func SetGet(m Map, b *testing.B) {
 
 	b.StopTimer()
 	key := fmt.Sprintf("E SetGet %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 func SetDelete(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 		m.Delete(int32(i))
@@ -135,15 +147,16 @@ func SetDelete(m Map, b *testing.B) {
 
 	b.StopTimer()
 	key := fmt.Sprintf("F SetDelete %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 func GetDelete(m Map, b *testing.B) {
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{a: i, b: i})
 	}
@@ -156,12 +169,12 @@ func GetDelete(m Map, b *testing.B) {
 
 	b.StopTimer()
 	key := fmt.Sprintf("G GetDelete %T", m)
-	gcTimes := GCTimes{}
+	gcTimes := Stats{}
 	CollectGC(&gcTimes, false)
 	runtime.KeepAlive(m)
 	m = nil
 	CollectGC(&gcTimes, true)
-	GCTimesMap[key] = gcTimes
+	StatsMap[key] = gcTimes
 }
 
 // Set
@@ -310,23 +323,25 @@ func BenchmarkPrintGCTimes(b *testing.B) {
 		return
 	}
 	printed = true
-	keys := make([]string, 0, len(GCTimesMap))
-	for k := range GCTimesMap {
+	keys := make([]string, 0, len(StatsMap))
+	for k := range StatsMap {
 		keys = append(keys, k)
 	}
 
 	sort.Strings(keys)
 
-	fmt.Println("|Name|Total ms before sweep|Pause ms before sweep|Total ms after sweep|Pause after ms sweep|")
+	fmt.Println("|Name|Total ms before sweep|Pause ms before sweep|Total ms after sweep|Pause after ms sweep|Mem GB before sweep|Mem GB after sweep|")
 	fmt.Println("|----|---------------------|---------------------|--------------------|--------------------|")
 	for _, k := range keys {
 
-		fmt.Printf("|%s|%.1f|%.3f|%1.f|%.3f|\n",
+		fmt.Printf("|%s|%.1f|%.3f|%1.f|%.3f|%.1f|%.1f|\n",
 			strings.Replace(k, "*main.", "", 1),
-			float64(GCTimesMap[k].TotalTimeBefore.Nanoseconds())/1000000.0,
-			float64(GCTimesMap[k].PauseTimeBefore.Nanoseconds())/1000000.0,
-			float64(GCTimesMap[k].TotalTimeAfter.Nanoseconds())/1000000.0,
-			float64(GCTimesMap[k].PauseTimeAfter.Nanoseconds())/1000000.0,
+			float64(StatsMap[k].GCTotalTimeBefore.Nanoseconds())/1000000.0,
+			float64(StatsMap[k].GCPauseTimeBefore.Nanoseconds())/1000000.0,
+			float64(StatsMap[k].GCTotalTimeAfter.Nanoseconds())/1000000.0,
+			float64(StatsMap[k].GCPauseTimeAfter.Nanoseconds())/1000000.0,
+			float64(StatsMap[k].MemBefore)/(1024*1024*1024),
+			float64(StatsMap[k].MemAfter)/(1024*1024*1024),
 		)
 	}
 }
