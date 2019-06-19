@@ -1,11 +1,24 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"log"
+	"runtime"
+	"sort"
+	"testing"
+	"time"
+)
+
+var GCTimes = make(map[string]time.Duration)
 
 func Set(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		m.Set(int32(i), &Item{i, i})
 	}
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("A Set %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 func Get(m Map, b *testing.B) {
@@ -17,6 +30,11 @@ func Get(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = m.Get(int32(i))
 	}
+
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("B Get %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 func Update(m Map, b *testing.B) {
@@ -28,6 +46,11 @@ func Update(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		m.Update(int32(i), i, i)
 	}
+
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("C Update %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 func Delete(m Map, b *testing.B) {
@@ -39,6 +62,11 @@ func Delete(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		m.Delete(int32(i))
 	}
+
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("D Delete %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 func SetGet(m Map, b *testing.B) {
@@ -46,6 +74,11 @@ func SetGet(m Map, b *testing.B) {
 		m.Set(int32(i), &Item{i, i})
 		_ = m.Get(int32(i))
 	}
+
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("E SetGet %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 func SetDelete(m Map, b *testing.B) {
@@ -53,6 +86,11 @@ func SetDelete(m Map, b *testing.B) {
 		m.Set(int32(i), &Item{i, i})
 		m.Delete(int32(i))
 	}
+
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("F SetDelete %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 func GetDelete(m Map, b *testing.B) {
@@ -65,6 +103,11 @@ func GetDelete(m Map, b *testing.B) {
 		_ = m.Get(int32(i))
 		m.Delete(int32(i))
 	}
+
+	b.StopTimer()
+	runtime.GC()
+	GCTimes[fmt.Sprintf("G GetDelete %T", m)] = timeGC()
+	runtime.KeepAlive(m)
 }
 
 // Set
@@ -144,4 +187,18 @@ func BenchmarkMapRewrite_GetDelete(b *testing.B) {
 }
 func BenchmarkMapSlice_GetDelete(b *testing.B) {
 	GetDelete(NewMapSlice(b.N), b)
+}
+
+// print GC times
+func BenchmarkPrintGCTimes(b *testing.B) {
+	keys := make([]string, 0, len(GCTimes))
+	for k := range GCTimes {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		log.Printf("With %s GC took %.1f ms\n", k, float64(GCTimes[k].Nanoseconds())/1000000.0)
+	}
 }
