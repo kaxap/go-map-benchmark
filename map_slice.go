@@ -24,6 +24,7 @@ func (m *MapSlice) Set(i int32, it *Item) {
 		for ind := range m.free {
 			m.m[i] = ind
 			m.s[ind] = it
+			delete(m.free, ind)
 			return
 		}
 	}

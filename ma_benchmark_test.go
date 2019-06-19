@@ -13,7 +13,7 @@ var GCTimes = make(map[string]time.Duration)
 
 func Set(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 	}
 	b.StopTimer()
 	runtime.GC()
@@ -23,7 +23,7 @@ func Set(m Map, b *testing.B) {
 
 func Get(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 	}
 
 	b.ResetTimer()
@@ -39,7 +39,7 @@ func Get(m Map, b *testing.B) {
 
 func Update(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 	}
 
 	b.ResetTimer()
@@ -55,7 +55,7 @@ func Update(m Map, b *testing.B) {
 
 func Delete(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 	}
 
 	b.ResetTimer()
@@ -71,7 +71,7 @@ func Delete(m Map, b *testing.B) {
 
 func SetGet(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 		_ = m.Get(int32(i))
 	}
 
@@ -83,7 +83,7 @@ func SetGet(m Map, b *testing.B) {
 
 func SetDelete(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 		m.Delete(int32(i))
 	}
 
@@ -95,7 +95,7 @@ func SetDelete(m Map, b *testing.B) {
 
 func GetDelete(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		m.Set(int32(i), &Item{i, i})
+		m.Set(int32(i), &Item{a: i, b: i})
 	}
 
 	b.ResetTimer()
@@ -114,13 +114,14 @@ func GetDelete(m Map, b *testing.B) {
 func BenchmarkMapPointers_Set(b *testing.B) {
 	Set(NewMapPointers(b.N), b)
 }
-
 func BenchmarkMapRewrite_Set(b *testing.B) {
 	Set(NewMapRewrite(b.N), b)
 }
-
 func BenchmarkMapSlice_Set(b *testing.B) {
 	Set(NewMapSlice(b.N), b)
+}
+func BenchmarkMapByteBuf_Set(b *testing.B) {
+	Set(NewMapByteBuf(b.N), b)
 }
 
 // Get
@@ -133,6 +134,9 @@ func BenchmarkMapRewrite_Get(b *testing.B) {
 func BenchmarkMapSlice_Get(b *testing.B) {
 	Get(NewMapSlice(b.N), b)
 }
+func BenchmarkMapByteBuf_Get(b *testing.B) {
+	Get(NewMapByteBuf(b.N), b)
+}
 
 // Update
 func BenchmarkMapPointers_Update(b *testing.B) {
@@ -143,6 +147,9 @@ func BenchmarkMapRewrite_Update(b *testing.B) {
 }
 func BenchmarkMapSlice_Update(b *testing.B) {
 	Update(NewMapSlice(b.N), b)
+}
+func BenchmarkMapByteBuf_Update(b *testing.B) {
+	Update(NewMapByteBuf(b.N), b)
 }
 
 // Delete
@@ -155,6 +162,9 @@ func BenchmarkMapRewrite_Delete(b *testing.B) {
 func BenchmarkMapSlice_Delete(b *testing.B) {
 	Delete(NewMapSlice(b.N), b)
 }
+func BenchmarkMapByteBuf_Delete(b *testing.B) {
+	Delete(NewMapByteBuf(b.N), b)
+}
 
 // SetGet
 func BenchmarkMapPointers_SetGet(b *testing.B) {
@@ -165,6 +175,9 @@ func BenchmarkMapRewrite_SetGet(b *testing.B) {
 }
 func BenchmarkMapSlice_SetGet(b *testing.B) {
 	SetGet(NewMapSlice(b.N), b)
+}
+func BenchmarkMapByteBuf_SetGet(b *testing.B) {
+	SetGet(NewMapByteBuf(b.N), b)
 }
 
 // SetDelete
@@ -177,6 +190,9 @@ func BenchmarkMapRewrite_SetDelete(b *testing.B) {
 func BenchmarkMapSlice_SetDelete(b *testing.B) {
 	SetDelete(NewMapSlice(b.N), b)
 }
+func BenchmarkMapByteBuf_SetDelete(b *testing.B) {
+	SetDelete(NewMapByteBuf(b.N), b)
+}
 
 // GetDelete
 func BenchmarkMapPointers_GetDelete(b *testing.B) {
@@ -187,6 +203,9 @@ func BenchmarkMapRewrite_GetDelete(b *testing.B) {
 }
 func BenchmarkMapSlice_GetDelete(b *testing.B) {
 	GetDelete(NewMapSlice(b.N), b)
+}
+func BenchmarkMapByteBuf_GetDelete(b *testing.B) {
+	GetDelete(NewMapByteBuf(b.N), b)
 }
 
 // print GC times
