@@ -61,7 +61,7 @@ For maps containing:
 |GetDelete MapRewrite |119.8|
 |GetDelete MapSlice |111.3|
 
-## TL;DR
+## Summary
 Overall, maps with pointers are fast, but GC times are really terrible, taking 4-7x times more than a map backed with slice of pointers.
 
 A map with structs is the slowest on all operations except for delete, where it 3x times faster than a map backed with slice. Nevertheless, it has the shortest GC times on all operations.
