@@ -1,1 +1,1 @@
-go test -bench . -benchtime 10s -benchmem
+go test -bench . -benchtime 10s -benchmem -timeout 60m
