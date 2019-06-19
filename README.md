@@ -7,6 +7,8 @@ For maps containing:
 
 ## Benchmarks
 
+![](images/bench.png)
+
 |Benchmark|Iterations|ns/op|Bytes/op|allocs/op|
 |---------|----------|-------|--------|---------|
 |Pointers_Set-8|50000000 |278 |37 B/op|1 |
@@ -31,8 +33,9 @@ For maps containing:
 |Rewrite_GetDelete-8|100000000|330 |16 B/op|1 |
 |Slice_GetDelete-8|30000000 |623 |46 B/op|0 |
 
-![](images/bench.png)
 ## GC times
+
+![](images/gc.png)
 
 |Function|GC time (ms)|
 |--------|------------|
@@ -58,17 +61,15 @@ For maps containing:
 |GetDelete MapRewrite |119.8|
 |GetDelete MapSlice |111.3|
 
-![](images/gc.png)
-
 ## TL;DR
 Overall, maps with pointers are fast, but GC times are really terrible, taking 4-7x times more than a map backed with slice of pointers.
 
-A map with structs is the slowest on all operations except for delete, where it 3x times faster than a map backed with slice.
+A map with structs is the slowest on all operations except for delete, where it 3x times faster than a map backed with slice. Nevertheless, it has the shortest GC times on all operations.
 
-A map with backed slice of pointers takes really long time to delete element since it performing 3 operations: deleting from map itself, removing reference from the slice and adding index of the slice to the set of "free" indexes to be reused later. However, GC times are 3x-7x shorter compared to map with pointer values.
+A map with backed slice of pointers takes really long time to delete an element, since it is performing 3 operations: deleting from the map itself, removing the reference from the slice and adding index of the slice element to the set of "free" indexes to be reused later. However, GC times are 3x-7x shorter compared to the map with pointer values.
 
-For a huge map with frequent delete operations I'd recommend to use a map with struct values which rewrites updated values back to the map.
+For a huge map with frequent delete operations I'd recommend to use the map with struct values which rewrites updated values back to the map.
 
-Otherwise it is better to use a map backed with slice of pointers.
+Otherwise it is better to use the map backed with a slice of pointers.
 
 
