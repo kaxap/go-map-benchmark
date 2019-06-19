@@ -10,6 +10,7 @@ import (
 )
 
 var GCTimes = make(map[string]time.Duration)
+var printed = false
 
 func Set(m Map, b *testing.B) {
 	for i := 0; i < b.N; i++ {
@@ -210,6 +211,10 @@ func BenchmarkMapByteBuf_GetDelete(b *testing.B) {
 
 // print GC times
 func BenchmarkPrintGCTimes(b *testing.B) {
+	if printed {
+		return
+	}
+	printed = true
 	keys := make([]string, 0, len(GCTimes))
 	for k := range GCTimes {
 		keys = append(keys, k)
