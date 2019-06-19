@@ -124,6 +124,9 @@ func BenchmarkMapSlice_Set(b *testing.B) {
 func BenchmarkMapByteBuf_Set(b *testing.B) {
 	Set(NewMapByteBuf(b.N), b)
 }
+func BenchmarkMapSliceStruct_Set(b *testing.B) {
+	Set(NewMapSliceStruct(b.N), b)
+}
 
 // Get
 func BenchmarkMapPointers_Get(b *testing.B) {
@@ -137,6 +140,9 @@ func BenchmarkMapSlice_Get(b *testing.B) {
 }
 func BenchmarkMapByteBuf_Get(b *testing.B) {
 	Get(NewMapByteBuf(b.N), b)
+}
+func BenchmarkMapSliceStruct_Get(b *testing.B) {
+	Get(NewMapSliceStruct(b.N), b)
 }
 
 // Update
@@ -152,6 +158,9 @@ func BenchmarkMapSlice_Update(b *testing.B) {
 func BenchmarkMapByteBuf_Update(b *testing.B) {
 	Update(NewMapByteBuf(b.N), b)
 }
+func BenchmarkMapSliceStruct_Update(b *testing.B) {
+	Update(NewMapSliceStruct(b.N), b)
+}
 
 // Delete
 func BenchmarkMapPointers_Delete(b *testing.B) {
@@ -165,6 +174,9 @@ func BenchmarkMapSlice_Delete(b *testing.B) {
 }
 func BenchmarkMapByteBuf_Delete(b *testing.B) {
 	Delete(NewMapByteBuf(b.N), b)
+}
+func BenchmarkMapSliceStruct_Delete(b *testing.B) {
+	Delete(NewMapSliceStruct(b.N), b)
 }
 
 // SetGet
@@ -180,6 +192,9 @@ func BenchmarkMapSlice_SetGet(b *testing.B) {
 func BenchmarkMapByteBuf_SetGet(b *testing.B) {
 	SetGet(NewMapByteBuf(b.N), b)
 }
+func BenchmarkNewMapSliceStruct(b *testing.B) {
+	SetGet(NewMapSliceStruct(b.N), b)
+}
 
 // SetDelete
 func BenchmarkMapPointers_SetDelete(b *testing.B) {
@@ -194,6 +209,9 @@ func BenchmarkMapSlice_SetDelete(b *testing.B) {
 func BenchmarkMapByteBuf_SetDelete(b *testing.B) {
 	SetDelete(NewMapByteBuf(b.N), b)
 }
+func BenchmarkMapSliceStruct_SetDelete(b *testing.B) {
+	SetDelete(NewMapSliceStruct(b.N), b)
+}
 
 // GetDelete
 func BenchmarkMapPointers_GetDelete(b *testing.B) {
@@ -207,6 +225,9 @@ func BenchmarkMapSlice_GetDelete(b *testing.B) {
 }
 func BenchmarkMapByteBuf_GetDelete(b *testing.B) {
 	GetDelete(NewMapByteBuf(b.N), b)
+}
+func BenchmarkMapSliceStruct_GetDelete(b *testing.B) {
+	GetDelete(NewMapSliceStruct(b.N), b)
 }
 
 // print GC times
