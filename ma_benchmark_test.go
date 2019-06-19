@@ -182,7 +182,7 @@ func BenchmarkMapSlice_Delete(b *testing.B) {
 	Delete(NewMapSlice(b.N), b)
 }
 func BenchmarkMapSliceSlice_Delete(b *testing.B) {
-	Delete(NewMapSlice(b.N), b)
+	Delete(NewMapSliceSlice(b.N), b)
 }
 func BenchmarkMapByteBuf_Delete(b *testing.B) {
 	Delete(NewMapByteBuf(b.N), b)
