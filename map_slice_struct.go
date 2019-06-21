@@ -21,7 +21,7 @@ func (m *MapSliceStruct) Get(i int32) *Item {
 }
 
 func (m *MapSliceStruct) Set(i int32, it *Item) {
-	if len(m.free) == m.N/8 {
+	if len(m.free) > 0 && len(m.free) >= m.N/8 {
 		ind := m.free[len(m.free)-1]
 		m.m[i] = ind
 		m.s[ind] = *it
