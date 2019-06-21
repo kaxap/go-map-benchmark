@@ -331,7 +331,7 @@ func BenchmarkPrintGCTimes(b *testing.B) {
 	sort.Strings(keys)
 
 	fmt.Println("|Name|Total ms before sweep|Pause ms before sweep|Total ms after sweep|Pause after ms sweep|Mem GB before sweep|Mem GB after sweep|")
-	fmt.Println("|----|---------------------|---------------------|--------------------|--------------------|")
+	fmt.Println("|----|---------------------|---------------------|--------------------|--------------------|-------------------|------------------|")
 	for _, k := range keys {
 
 		fmt.Printf("|%s|%.1f|%.3f|%1.f|%.3f|%.1f|%.1f|\n",
